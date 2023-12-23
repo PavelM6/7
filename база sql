@@ -1,0 +1,99 @@
+CREATE TABLE subject (
+    name VARCHAR(255) PRIMARY KEY
+);
+CREATE TABLE teacher (
+    id SERIAL PRIMARY KEY,
+    full_name VARCHAR(255) UNIQUE,
+    subject VARCHAR(255) REFERENCES subject(name)
+);
+CREATE TABLE timetable (
+    id SERIAL PRIMARY KEY,
+    day VARCHAR(255),
+    subject VARCHAR(255) REFERENCES subject(name),
+    teacher VARCHAR(255) REFERENCES teacher(full_name),
+    room_numb VARCHAR(255),
+    start_time TIME,
+    week_type VARCHAR(10)
+);
+
+INSERT INTO subject (name) VALUES ('Введение в информационные технологии');
+INSERT INTO subject (name) VALUES ('Введение в профессию');
+INSERT INTO subject (name) VALUES ('Высшая математика');
+INSERT INTO subject (name) VALUES ('Иностранный язык');
+INSERT INTO subject (name) VALUES ('Линейная алгебра и аналитическая геометрия');
+INSERT INTO subject (name) VALUES ('Основы российской государственности');
+INSERT INTO subject (name) VALUES ('Русский язык и культура речи');
+INSERT INTO subject (name) VALUES ('Физика');
+INSERT INTO subject (name) VALUES ('Философия');
+INSERT INTO subject (name) VALUES ('Физическая культура и спорт');
+
+
+INSERT INTO teacher (full_name, subject) VALUES ('Александров Ю. Л.', 'Линейная алгебра и аналитическая геометрия');
+INSERT INTO teacher (full_name, subject) VALUES ('Пискарёв С. И.', 'Линейная алгебра и аналитическая геометрия');
+INSERT INTO teacher (full_name, subject) VALUES ('Стёпа Л. М.', 'Линейная алгебра и аналитическая геометрия');
+INSERT INTO teacher (full_name, subject) VALUES ('Солиев Ю. С.', 'Высшая математика');
+INSERT INTO teacher (full_name, subject) VALUES ('Тренин А. Е.', 'Физика');
+INSERT INTO teacher (full_name, subject) VALUES ('Иноземцева Н. Г.', 'Физика');
+INSERT INTO teacher (full_name, subject) VALUES ('Девайкин И. А.', 'Философия');
+INSERT INTO teacher (full_name, subject) VALUES ('Кораблёва Е. В.', 'Философия');
+INSERT INTO teacher (full_name, subject) VALUES ('Казиева Т. В.', 'Введение в информационные технологии');
+INSERT INTO teacher (full_name, subject) VALUES ('Рабенандрасана Ж', 'Введение в информационные технологии');
+INSERT INTO teacher (full_name, subject) VALUES ('Каменева Н. И.', 'Иностранный язык');
+INSERT INTO teacher (full_name, subject) VALUES ('Денеко М. В.', 'Иностранный язык');
+INSERT INTO teacher (full_name, subject) VALUES ('Бочарова Т. И.', 'Русский язык и культура речи');
+INSERT INTO teacher (full_name, subject) VALUES ('Хуснутдинова Л. Г.', 'Основы российской государственности');
+INSERT INTO teacher (full_name, subject) VALUES ('Антонова В. М.', 'Введение в профессию');
+INSERT INTO teacher (full_name, subject) VALUES ('Хайрулин Р. С.', 'Физическая культура и спорт');
+
+
+INSERT INTO timetable (day, subject, teacher, room_numb, start_time, week_type) VALUES 
+    ('Понедельник', 'Линейная алгебра и аналитическая геометрия', 'Александров Ю. Л.', '314 (ОП)', '09:30', 'четная'),
+    ('Понедельник', 'Физика', 'Тренин А. Е.', '342 (ОП)', '11:20', 'четная'),
+    ('Понедельник', 'Физическая культура и спорт', 'Хайрулин Р. С.', 'Спортзал (ОП)', '13:10', 'четная'),
+    ('Понедельник', 'Основы российской государственности', 'Хуснутдинова Л. Г.', '316 (ОП)', '15:25', 'четная');
+
+INSERT INTO timetable (day, subject, teacher, room_numb, start_time, week_type) VALUES 
+    ('Вторник', 'Линейная алгебра и аналитическая геометрия', 'Пискарёв С. И.', '508 (ОП)', '09:30', 'четная'),
+    ('Вторник', 'Философия', 'Кораблёва Е. В.', '227 (ОП)', '11:20', 'четная'),
+    ('Вторник', 'Философия', 'Девайкин И. А.', '509 (ОП)', '13:10', 'четная'),
+    ('Вторник', 'Физическая культура и спорт', 'Хайрулин Р. С.', 'Спортзал (ОП)', '15:25', 'четная');
+	
+INSERT INTO timetable (day, subject, teacher, room_numb, start_time, week_type) VALUES 
+    ('Среда', 'Введение в информационные технологии', 'Рабенандрасана Ж', 'П-207 (А)', '11:20', 'четная'),
+    ('Среда', 'Иностранный язык', 'Каменева Н. И.', 'А-422 (А)', '13:10', 'четная');
+	
+INSERT INTO timetable (day, subject, teacher, room_numb, start_time, week_type) VALUES 
+    ('Четверг', 'Русский язык и культура речи', 'Бочарова Т. И.', '535 (ОП)', '09:30', 'четная'),
+    ('Четверг', 'Высшая математика', 'Солиев Ю. С.', '404 (ОП)', '11:20', 'четная'),
+    ('Четверг', 'Русский язык и культура речи', 'Бочарова Т. И.', '308 (ОП)', '13:10', 'четная');
+	
+INSERT INTO timetable (day, subject, teacher, room_numb, start_time, week_type) VALUES 
+  	('Суббота', 'Введение в информационные технологии', 'Казиева Т. В.', 'УЛК-702 (А)', '13:10', 'четная'),
+    ('Суббота', 'Введение в информационные технологии', 'Казиева Т. В.', 'УЛК-702 (А)', '15:25', 'четная');
+	
+INSERT INTO timetable (day, subject, teacher, room_numb, start_time, week_type) VALUES 
+    ('Понедельник', 'Линейная алгебра и аналитическая геометрия', 'Александров Ю. Л.', '308 (ОП)', '09:30', 'нечетная'),
+    ('Понедельник', 'Основы российской государственности', 'Хуснутдинова Л. Г.', '318 (ОП)', '11:20', 'нечетная'),
+    ('Понедельник', 'Иностранный язык', 'Денеко М. В.', '524 (ОП)', '13:10', 'нечетная'),
+    ('Понедельник', 'Философия', 'Девайкин И. А.', '227 (ОП)', '15:25', 'нечетная');
+	
+INSERT INTO timetable (day, subject, teacher, room_numb, start_time, week_type) VALUES 
+    ('Вторник', 'Физика', 'Иноземцева Н. Г.', '226 (ОП)', '09:30', 'нечетная'),
+    ('Вторник', 'Физическая культура и спорт', 'Хайрулин Р. С.', 'Спортзал (ОП)', '11:20', 'нечетная'),
+    ('Вторник', 'Физика', 'Иноземцева Н. Г.', '226 (ОП)', '13:10', 'нечетная'),
+    ('Вторник', 'Основы российской государственности', 'Хуснутдинова Л. Г.', '535 (ОП)', '15:25', 'нечетная');
+
+
+INSERT INTO timetable (day, subject, teacher, room_numb, start_time, week_type) VALUES 
+    ('Среда', 'Философия', 'Кораблёва Е. В.', '535 (ОП)', '13:10', 'нечетная'),
+    ('Среда', 'Физическая культура и спорт', 'Хайрулин Р. С.', 'Спортзал (ОП)', '15:25', 'нечетная'),
+    ('Среда', 'Русский язык и культура речи', 'Бочарова Т. И.', '328 (ОП)', '17:15', 'нечетная');
+	
+INSERT INTO timetable (day, subject, teacher, room_numb, start_time, week_type) VALUES 
+    ('Четверг', 'Высшая математика', 'Солиев Ю. С.', '508 (ОП)', '09:30', 'нечетная'),
+    ('Четверг', 'Высшая математика', 'Солиев Ю. С.', '520 (ОП)', '11:20', 'нечетная');
+	
+INSERT INTO timetable (day, subject, teacher, room_numb, start_time, week_type) VALUES 
+    ('Пятница', 'Введение в профессию', 'Антонова В. М.', 'УЛК-901 (А)', '11:20', 'нечетная'),
+    ('Пятница', 'Введение в профессию', 'Антонова В. М.', 'УЛК-901 (А)', '13:10', 'нечетная');
+
