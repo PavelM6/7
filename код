@@ -1,0 +1,106 @@
+import telebot
+from telebot import types
+import psycopg2
+import datetime
+
+DATABASE_URL = "postgresql://pavel:12345678@localhost:5432/mtuci"
+
+token = "6550727273:AAE3A08SBqR_vUMsdVwLsioSsN060buMiRo"
+
+bot = telebot.TeleBot(token)
+
+def execute_query(query, values=None, fetchone=False):
+    connection = psycopg2.connect(DATABASE_URL)
+    cursor = connection.cursor()
+    cursor.execute(query, values)
+    result = cursor.fetchone() if fetchone else cursor.fetchall()
+    connection.commit()
+    cursor.close()
+    connection.close()
+    return result
+
+def get_week_type():
+    today = datetime.date.today()
+    iso_week_number = today.isocalendar()[1]
+
+    if iso_week_number % 2 == 0:
+        return 'четное'
+    else:
+        return 'нечетное'
+
+def get_schedule(day_of_week):
+    week_type = get_week_type()
+
+    query = """
+        SELECT subject.name, timetable.room_numb, timetable.start_time, teacher.full_name 
+        FROM timetable 
+        JOIN subject ON timetable.subject = subject.name 
+        JOIN teacher ON timetable.teacher = teacher.id::text  -- Явное приведение к строке
+        WHERE timetable.day = %s AND timetable.week_type = %s
+    """
+    result = execute_query(query, values=(day_of_week, week_type), fetchone=False)
+    return result
+
+@bot.message_handler(commands=['start'])
+def start(message):
+    keyboard = types.ReplyKeyboardMarkup()
+    keyboard.row("Хочу", "/help", '/schedule', '/week', '/mtuci')
+    bot.send_message(message.chat.id, 'Привет! Хочешь узнать свежую информацию о МТУСИ?', reply_markup=keyboard)
+
+@bot.message_handler(commands=['help'])
+def start_message(message):
+    bot.send_message(message.chat.id, 'Я умею всё что угодно $')
+
+@bot.message_handler(commands=['schedule'])
+def schedule(message):
+    markup = types.ReplyKeyboardMarkup()
+    markup.row('Понедельник', 'Вторник', 'Среда')
+    markup.row('Четверг', 'Пятница')
+    markup.row('Расписание на текущую неделю', 'Расписание на следующую неделю')
+    bot.send_message(message.chat.id, 'Выберите день недели или опцию расписания:', reply_markup=markup)
+
+@bot.message_handler(func=lambda message: message.text in ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница'])
+def show_daily_schedule(message):
+    day_of_week = message.text.lower()
+    schedule_info = get_schedule(day_of_week)
+
+    if schedule_info:
+        response = f"Расписание на {day_of_week.capitalize()} для {get_week_type()} недели:\n"
+        for entry in schedule_info:
+            response += f"{entry[0]} {entry[1]} {entry[2]} {entry[3]}\n"
+    else:
+        response = f"На {day_of_week.capitalize()} нет занятий."
+
+    bot.send_message(message.chat.id, response)
+
+@bot.message_handler(func=lambda message: message.text == 'Расписание на текущую неделю')
+def show_current_week_schedule(message):
+    week_type = get_week_type()
+    schedule_info = get_schedule("Понедельник")  # начнем с понедельника
+    if schedule_info:
+        response = f"Расписание на текущую {week_type} неделю:\n"
+        for entry in schedule_info:
+            response += f"{entry[0]} {entry[1]} {entry[2]} {entry[3]}\n"
+    else:
+        response = f"На текущей {week_type} неделе нет занятий."
+
+    bot.send_message(message.chat.id, response)
+
+@bot.message_handler(commands=['week'])
+def current_week(message):
+    week_type_info = f"Текущая неделя - {get_week_type()}"
+    bot.send_message(message.chat.id, week_type_info)
+
+@bot.message_handler(commands=['mtuci'])
+def mtuci_website(message):
+    mtuci_link = "Ссылка на официальный сайт МТУСИ: https://mtuci.ru/"
+    bot.send_message(message.chat.id, mtuci_link)
+
+@bot.message_handler(content_types=['text'])
+def answer(message):
+    if message.text.lower() == "хочу":
+        bot.send_message(message.chat.id, 'Тогда тебе сюда - https://mtuci.ru/')
+    else:
+        bot.send_message(message.chat.id, "Извините, ай don't know.")
+
+bot.polling()
